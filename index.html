@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PostMessage Receiver</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      #message {
+        font-size: 1.5em;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="message">Waiting for message...</div>
+
+    <script>
+      window.addEventListener(
+        'message',
+        function (event) {
+          // There should be a check for the origin of the message, to ensure that it's coming from a trusted source.
+          // Disabling this check for the purpose of this demo.
+          // if (event.origin !== 'https://trusted-origin.com') return;
+
+          document.getElementById('message').textContent = event.data;
+        },
+        false
+      );
+    </script>
+  </body>
+</html>
