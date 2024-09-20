@@ -44,6 +44,9 @@
 
           messages.push(event.data);
           updateMessages();
+
+          // Send acknowledgement back to the sender
+          event.source.postMessage('ack', event.origin);
         },
         false
       );
