@@ -12,17 +12,27 @@
         align-items: center;
         height: 100vh;
         margin: 0;
+        flex-direction: column;
       }
-      #message {
+      #messages {
         font-size: 1.5em;
         color: #333;
+        width: 80%;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+      .message {
+        border-bottom: 1px solid #ccc;
+        padding: 10px;
       }
     </style>
   </head>
   <body>
-    <div id="message">Waiting for message...</div>
+    <div id="messages">Waiting for messages...</div>
 
     <script>
+      const messages = [];
+
       window.addEventListener(
         'message',
         function (event) {
@@ -30,10 +40,23 @@
           // Disabling this check for the purpose of this demo.
           // if (event.origin !== 'https://trusted-origin.com') return;
 
-          document.getElementById('message').textContent = event.data;
+          console.log('Message received:', event.data);
+
+          messages.push(event.data);
+          updateMessages();
         },
         false
       );
+
+      function updateMessages() {
+        const messagesDiv = document.getElementById('messages');
+        messagesDiv.innerHTML = messages
+          .map(
+            (msg) =>
+              `<div class="message">${JSON.stringify(msg, null, 2)}</div>`
+          )
+          .join('');
+      }
     </script>
   </body>
 </html>
