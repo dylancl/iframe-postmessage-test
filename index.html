@@ -33,25 +33,33 @@
     <script>
       const messages = [];
 
-      window.addEventListener(
-        'message',
-        function (event) {
-          // There should be a check for the origin of the message, to ensure that it's coming from a trusted source.
-          // Disabling this check for the purpose of this demo.
-          // if (event.origin !== 'https://trusted-origin.com') return;
+      window.addEventListener('message', (event) => {
+        // There should be a check for the origin of the message, to ensure that it's coming from a trusted source.
+        // Disabling this check for the purpose of this demo.
+        // if (event.origin !== 'https://trusted-origin.com') return;
 
-          console.log('Message received:', event.data);
-
+        // Check if the type of the message is 'vin'
+        if (event.data.type === 'vin') {
+          // For the purposes of the demo, we're just displaying the message on the page
+          // Here, in a real-world scenario, you would do something more meaningful with the value of the message
           messages.push(event.data);
+
+          // Update the messages displayed on the page
           updateMessages();
 
-          // Send acknowledgement back to the sender
-          event.source.postMessage('ack', event.origin);
-        },
-        false
-      );
+          // Send a response back to the sender
+          // This is important as it lets the sender (our application) know that the message was received successfully
+          // and indicates we can stop sending the VIN. It also allows us to track successful message delivery.
+          event.source.postMessage(
+            {
+              type: 'ack',
+            },
+            event.origin
+          );
+        }
+      });
 
-      function updateMessages() {
+      const updateMessages = () => {
         const messagesDiv = document.getElementById('messages');
         messagesDiv.innerHTML = messages
           .map(
@@ -59,7 +67,7 @@
               `<div class="message">${JSON.stringify(msg, null, 2)}</div>`
           )
           .join('');
-      }
+      };
     </script>
   </body>
 </html>
