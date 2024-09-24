@@ -28,18 +28,18 @@
         background-color: #e7f3fe;
         border-left: 4px solid #2196f3;
       }
-      #vinList {
+      #messageList {
         list-style-type: none;
         padding: 0;
       }
-      .vin-item {
+      .message-item {
         background-color: #f9f9f9;
         border: 1px solid #ddd;
         margin-bottom: 10px;
         padding: 10px;
         border-radius: 4px;
       }
-      .vin-item span {
+      .message-item span {
         font-weight: bold;
       }
       .timestamp {
@@ -50,16 +50,23 @@
   </head>
   <body>
     <div id="app">
-      <h1>PostMessage Receiver</h1>
       <div id="status">Loading...</div>
-      <ul id="vinList"></ul>
+      <ul id="messageList"></ul>
     </div>
-
     <script>
       const externalScripts = [
-        { url: 'https://example.com/analytics.js', loadTime: 800 },
-        { url: 'https://example.com/vin-processor.js', loadTime: 1200 },
-        { url: 'https://example.com/ui-enhancer.js', loadTime: 600 },
+        {
+          url: 'https://example.com/analytics.js',
+          loadTime: Math.random() * 2000,
+        },
+        {
+          url: 'https://example.com/vin-processor.js',
+          loadTime: Math.random() * 2000,
+        },
+        {
+          url: 'https://example.com/ui-enhancer.js',
+          loadTime: Math.random() * 2000,
+        },
       ];
 
       let isPageReady = false;
@@ -70,17 +77,26 @@
         document.getElementById('status').textContent = message;
       };
 
+      const createMessageElement = (message, timestamp) => {
+        const listItem = document.createElement('li');
+        listItem.className = 'message-item';
+        listItem.innerHTML = `
+        <span>${message}</span>
+        <div class="timestamp">Received at: ${timestamp}</div>
+      `;
+        return listItem;
+      };
+
+      const renderMessage = (message, timestamp) => {
+        const messageElement = createMessageElement(message, timestamp);
+        document.getElementById('messageList').prepend(messageElement);
+      };
+
       const addVINToList = (vin) => {
         if (receivedVINs.has(vin)) return;
         receivedVINs.add(vin);
 
-        const listItem = document.createElement('li');
-        listItem.className = 'vin-item';
-        listItem.innerHTML = `
-        <span>VIN:</span> ${vin}
-        <div class="timestamp">Received at: ${new Date().toLocaleTimeString()}</div>
-      `;
-        document.getElementById('vinList').prepend(listItem);
+        renderMessage(`VIN: ${vin}`, new Date().toLocaleTimeString());
       };
 
       const simulateScriptLoading = () => {
@@ -88,8 +104,8 @@
           let loadedCount = 0;
           externalScripts.forEach(({ url, loadTime }) => {
             setTimeout(() => {
-              console.log(`Loaded: ${url}`);
-              updateStatus(`Loading: ${url}`);
+              console.log(`Loaded: ${url} | ${Math.round(loadTime)}ms`);
+              updateStatus(`Loading: ${url} | ${Math.round(loadTime)}ms`);
               loadedCount++;
               if (loadedCount === externalScripts.length) {
                 resolve();
@@ -105,6 +121,9 @@
           addVINToList(event.data.value);
 
           event.source.postMessage({ type: 'ack' }, event.origin);
+
+          renderMessage('Sent ACK', new Date().toLocaleTimeString());
+          updateStatus('Sent ACK');
         }
       };
 
@@ -123,7 +142,7 @@
       });
 
       window.addEventListener('load', () => {
-        updateStatus('Loading essential scripts...');
+        updateStatus('Simulating script loading...');
         simulateScriptLoading().then(() => {
           setTimeout(() => {
             isPageReady = true;
@@ -132,10 +151,6 @@
           }, 500);
         });
       });
-
-      setInterval(() => {
-        console.log('Background task: Checking system status...');
-      }, 5000);
     </script>
   </body>
 </html>
