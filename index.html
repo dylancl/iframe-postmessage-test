@@ -28,18 +28,18 @@
         background-color: #e7f3fe;
         border-left: 4px solid #2196f3;
       }
-      #messageList {
+      #vinList {
         list-style-type: none;
         padding: 0;
       }
-      .message-item {
+      .vin-item {
         background-color: #f9f9f9;
         border: 1px solid #ddd;
         margin-bottom: 10px;
         padding: 10px;
         border-radius: 4px;
       }
-      .message-item span {
+      .vin-item span {
         font-weight: bold;
       }
       .timestamp {
@@ -51,8 +51,9 @@
   <body>
     <div id="app">
       <div id="status">Loading...</div>
-      <ul id="messageList"></ul>
+      <ul id="vinList"></ul>
     </div>
+
     <script>
       const externalScripts = [
         {
@@ -77,26 +78,17 @@
         document.getElementById('status').textContent = message;
       };
 
-      const createMessageElement = (message, timestamp) => {
-        const listItem = document.createElement('li');
-        listItem.className = 'message-item';
-        listItem.innerHTML = `
-        <span>${message}</span>
-        <div class="timestamp">Received at: ${timestamp}</div>
-      `;
-        return listItem;
-      };
-
-      const renderMessage = (message, timestamp) => {
-        const messageElement = createMessageElement(message, timestamp);
-        document.getElementById('messageList').prepend(messageElement);
-      };
-
       const addVINToList = (vin) => {
         if (receivedVINs.has(vin)) return;
         receivedVINs.add(vin);
 
-        renderMessage(`VIN: ${vin}`, new Date().toLocaleTimeString());
+        const listItem = document.createElement('li');
+        listItem.className = 'vin-item';
+        listItem.innerHTML = `
+        <span>VIN:</span> ${vin}
+        <div class="timestamp">Received at: ${new Date().toLocaleTimeString()}</div>
+      `;
+        document.getElementById('vinList').prepend(listItem);
       };
 
       const simulateScriptLoading = () => {
@@ -122,8 +114,7 @@
 
           event.source.postMessage({ type: 'ack' }, event.origin);
 
-          renderMessage('Sent ACK', new Date().toLocaleTimeString());
-          updateStatus('Sent ACK');
+          updateStatus('Received VIN and sent acknowledgment');
         }
       };
 
