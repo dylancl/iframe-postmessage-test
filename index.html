@@ -70,6 +70,26 @@
         },
       ];
 
+      const simulateScriptLoading = () => {
+        return new Promise((resolve) => {
+          let loadedCount = 0;
+          externalScripts.forEach(({ url, loadTime }) => {
+            setTimeout(() => {
+              console.log(`Loaded: ${url} | ${Math.round(loadTime)}ms`);
+              document.getElementById(
+                'status'
+              ).textContent = `Loading: ${url} | ${Math.round(loadTime)}ms`;
+              loadedCount++;
+              if (loadedCount === externalScripts.length) {
+                resolve();
+              }
+            }, loadTime);
+          });
+        });
+      };
+    </script>
+
+    <script>
       let isPageReady = false;
       const messageQueue = [];
       const receivedVINs = new Set();
@@ -89,22 +109,6 @@
         <div class="timestamp">Received at: ${new Date().toLocaleTimeString()}</div>
       `;
         document.getElementById('vinList').prepend(listItem);
-      };
-
-      const simulateScriptLoading = () => {
-        return new Promise((resolve) => {
-          let loadedCount = 0;
-          externalScripts.forEach(({ url, loadTime }) => {
-            setTimeout(() => {
-              console.log(`Loaded: ${url} | ${Math.round(loadTime)}ms`);
-              updateStatus(`Loading: ${url} | ${Math.round(loadTime)}ms`);
-              loadedCount++;
-              if (loadedCount === externalScripts.length) {
-                resolve();
-              }
-            }, loadTime);
-          });
-        });
       };
 
       const processMessage = (event) => {
