@@ -28,46 +28,59 @@
     </style>
   </head>
   <body>
-    <div id="messages">Waiting for messages...</div>
+    <div id="messages">Loading...</div>
 
     <script>
       const messages = [];
 
-      window.addEventListener('message', (event) => {
-        // There should be a check for the origin of the message, to ensure that it's coming from a trusted source.
-        // Disabling this check for the purpose of this demo.
-        // if (event.origin !== 'https://trusted-origin.com') return;
+      const initialize = () => {
+        window.addEventListener('message', (event) => {
+          // There should be a check for the origin of the message, to ensure that it's coming from a trusted source.
+          // Disabling this check for the purpose of this demo.
+          // if (event.origin !== 'https://trusted-origin.com') return;
 
-        // Check if the type of the message is 'vin'
-        if (event.data.type === 'vin') {
-          // For the purposes of the demo, we're just displaying the message on the page
-          // Here, in a real-world scenario, you would do something more meaningful with the value of the message
-          messages.push(event.data);
+          // Check if the type of the message is 'vin'
+          if (event.data.type === 'vin') {
+            // For the purposes of the demo, we're just displaying the message on the page
+            // Here, in a real-world scenario, you would do something more meaningful with the value of the message
+            messages.push(event.data);
 
-          // Update the messages displayed on the page
-          updateMessages();
+            // Update the messages displayed on the page
+            updateMessages();
 
-          // Send a response back to the sender
-          // This is important as it lets the sender (our application) know that the message was received successfully
-          // and indicates we can stop sending the VIN. It also allows us to track successful message delivery.
-          event.source.postMessage(
-            {
-              type: 'ack',
-            },
-            event.origin
-          );
-        }
-      });
+            // Send a response back to the sender
+            // This is important as it lets the sender (our application) know that the message was received successfully
+            // and indicates we can stop sending the VIN. It also allows us to track successful message delivery.
+            event.source.postMessage(
+              {
+                type: 'ack',
+              },
+              event.origin
+            );
+          }
+        });
 
-      const updateMessages = () => {
-        const messagesDiv = document.getElementById('messages');
-        messagesDiv.innerHTML = messages
-          .map(
-            (msg) =>
-              `<div class="message">${JSON.stringify(msg, null, 2)}</div>`
-          )
-          .join('');
+        const updateMessages = () => {
+          const messagesDiv = document.getElementById('messages');
+          messagesDiv.innerHTML = messages
+            .map(
+              (msg) =>
+                `<div class="message">${JSON.stringify(msg, null, 2)}</div>`
+            )
+            .join('');
+        };
+
+        // Simulate the page being ready after a random delay
+        const randomDelay = Math.floor(Math.random() * 3000) + 1000; // Random delay between 1 and 4 seconds
+        setTimeout(() => {
+          document.getElementById('messages').innerText =
+            'Waiting for messages...';
+        }, randomDelay);
       };
+
+      // Initialize the script after a random delay
+      const randomInitDelay = Math.floor(Math.random() * 3000) + 1000; // Random delay between 1 and 4 seconds
+      setTimeout(initialize, randomInitDelay);
     </script>
   </body>
 </html>
