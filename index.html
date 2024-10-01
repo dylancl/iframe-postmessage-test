@@ -112,11 +112,11 @@
       };
 
       const processMessage = (event) => {
-        if (event.data && event.data.type === 'vin') {
+        if (event.data && event.data.type === 'or-vin') {
           console.log('Received VIN:', event.data.value);
           addVINToList(event.data.value);
 
-          event.source.postMessage({ type: 'ack' }, event.origin);
+          event.source.postMessage({ type: 'or-vin-ack' }, event.origin);
 
           updateStatus('Received VIN and sent acknowledgment');
         }
